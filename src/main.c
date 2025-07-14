@@ -43,9 +43,11 @@ uint32_t hal_get_systick_freq() {
 }
 
 volatile uint64_t systime = 0;
+volatile uint32_t timer_ms = 0;
 
 void SysTick_Handler(void) {
   systime++;
+  timer_ms++;
 }
 
 //20kHz

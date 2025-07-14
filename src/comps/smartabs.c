@@ -13,6 +13,8 @@ HAL_COMP(smartabs);
 HAL_PIN(pos);
 HAL_PIN(error);
 HAL_PIN(state);
+HAL_PIN(encoder_vals);
+HAL_PIN(encoder_bits);
 
 #pragma pack(push, 1)
 typedef struct {
@@ -307,6 +309,11 @@ struct smartabs_ctx_t {
   //uint8_t rxbuf[15]
 };
 
+static void nrt_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
+  struct smartabs_pin_ctx_t *pins = (struct smartabs_pin_ctx_t *)pin_ptr;
+  PIN(encoder_bits)            = 23;
+}
+
 static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   struct smartabs_ctx_t *ctx = (struct smartabs_ctx_t *)ctx_ptr;
   // struct smartabs_pin_ctx_t * pins = (struct smartabs_pin_ctx_t *)pin_ptr;
@@ -387,8 +394,23 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   uint8_t crc = calc_crc8((uint8_t *)&ctx->rxbuf.reply.cf, 6, smartabs_crc8_table);
 
   if(!crc) {
-    uint32_t tpos = ((ctx->rxbuf.reply.pos[2] & 0x01) << 16) + (ctx->rxbuf.reply.pos[1] << 8) + ctx->rxbuf.reply.pos[0];
-    PIN(pos)      = (tpos * M_PI * 2.0 / 131072.0) - M_PI;
+
+      uint32_t  pin_bits = PIN(encoder_bits);
+
+      if (pin_bits == 17)
+      {
+      uint32_t tpos = ((ctx->rxbuf.reply.pos[2] & 0x01) << 16)  + (ctx->rxbuf.reply.pos[1] << 8) + ctx->rxbuf.reply.pos[0];
+      PIN(encoder_vals) = tpos;
+      PIN(pos)      = (tpos * M_PI * 2.0 / 131072.0) - M_PI;
+      }
+
+      if (pin_bits == 23.0)
+      {
+      uint32_t tpos = ((ctx->rxbuf.reply.pos[2]) << 16) + (ctx->rxbuf.reply.pos[1] << 8) + ctx->rxbuf.reply.pos[0];
+      PIN(encoder_vals) = tpos;
+      PIN(pos)      = (tpos * M_PI * 2.0 / 8388608.0) - M_PI;
+      }
+
     PIN(state)    = 3;
     PIN(error)    = 0;
   } else {
@@ -417,7 +439,7 @@ hal_comp_t smartabs_comp_struct = {
     .nrt       = 0,
     .rt        = rt_func,
     .frt       = 0,
-    .nrt_init  = 0,
+    .nrt_init  = nrt_init,
     .hw_init   = hw_init,
     .rt_start  = 0,
     .frt_start = 0,

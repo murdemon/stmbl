@@ -59,7 +59,7 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
   TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
   TIM_ICInitStructure.TIM_ICFilter    = 0xF;
-  TIM_ICInit(FB0_ENC_TIM, &TIM_ICInitStructure);
+  TIM_ICInit(FB1_ENC_TIM, &TIM_ICInitStructure);
 
   /***************** port 1, quadrature , sin/cos or resolver *********************/
   ctx->e_res = (int)PIN(res);
@@ -67,36 +67,36 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
     ctx->e_res = 1;
   }
   // enable clocks
-  RCC_APB1PeriphClockCmd(FB0_ENC_TIM_RCC, ENABLE);
+  RCC_APB2PeriphClockCmd(FB1_ENC_TIM_RCC, ENABLE);
 
   // pin mode: af
-  GPIO_InitStructure.GPIO_Pin   = FB0_A_PIN;
+  GPIO_InitStructure.GPIO_Pin   = FB1_A_PIN;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-  GPIO_Init(FB0_A_PORT, &GPIO_InitStructure);
+  GPIO_Init(FB1_A_PORT, &GPIO_InitStructure);
 
-  GPIO_InitStructure.GPIO_Pin = FB0_B_PIN;
-  GPIO_Init(FB0_B_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = FB1_B_PIN;
+  GPIO_Init(FB1_B_PORT, &GPIO_InitStructure);
 
-  GPIO_InitStructure.GPIO_Pin = FB0_Z_PIN;
-  GPIO_Init(FB0_Z_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = FB1_Z_PIN;
+  GPIO_Init(FB1_Z_PORT, &GPIO_InitStructure);
 
   // pin af -> tim
-  GPIO_PinAFConfig(FB0_A_PORT, FB0_A_PIN_SOURCE, FB0_ENC_TIM_AF);
-  GPIO_PinAFConfig(FB0_B_PORT, FB0_B_PIN_SOURCE, FB0_ENC_TIM_AF);
-  GPIO_PinAFConfig(FB0_Z_PORT, FB0_Z_PIN_SOURCE, FB0_ENC_TIM_AF);
+  GPIO_PinAFConfig(FB1_A_PORT, FB1_A_PIN_SOURCE, FB1_ENC_TIM_AF);
+  GPIO_PinAFConfig(FB1_B_PORT, FB1_B_PIN_SOURCE, FB1_ENC_TIM_AF);
+  GPIO_PinAFConfig(FB1_Z_PORT, FB1_Z_PIN_SOURCE, FB1_ENC_TIM_AF);
 
   // enc res / turn
-  TIM_SetAutoreload(FB0_ENC_TIM, ctx->e_res - 1);
+  TIM_SetAutoreload(FB1_ENC_TIM, ctx->e_res - 1);
 
   // quad
-  TIM_Cmd(FB0_ENC_TIM, DISABLE);
-  TIM_EncoderInterfaceConfig(FB0_ENC_TIM, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Falling);
-  TIM_Cmd(FB0_ENC_TIM, ENABLE);
-  FB0_ENC_TIM->CCMR2 |= TIM_CCMR2_CC3S_0;  //CC3 channel is configured as input, IC3 is mapped on CH3
-  FB0_ENC_TIM->CCER |= TIM_CCER_CC3E;      //Capture enabled
+  TIM_Cmd(FB1_ENC_TIM, DISABLE);
+  TIM_EncoderInterfaceConfig(FB1_ENC_TIM, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Falling);
+  TIM_Cmd(FB1_ENC_TIM, ENABLE);
+  FB1_ENC_TIM->CCMR2 |= TIM_CCMR2_CC3S_0;  //CC3 channel is configured as input, IC3 is mapped on CH3
+  FB1_ENC_TIM->CCER |= TIM_CCER_CC3E;      //Capture enabled
 }
 
 
@@ -104,16 +104,16 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 //   struct enc_fb_ctx_t *ctx      = (struct enc_fb_ctx_t *)ctx_ptr;
 //   struct enc_fb_pin_ctx_t *pins = (struct enc_fb_pin_ctx_t *)pin_ptr;
 
-//   float p  = mod(TIM_GetCounter(FB0_ENC_TIM) * 2.0f * M_PI / (float)ctx->e_res);
+//   float p  = mod(TIM_GetCounter(FB1_ENC_TIM) * 2.0f * M_PI / (float)ctx->e_res);
 //   PIN(pos) = p;
 //   //TODO: this gets triggered by wire saving abs encoders. add timeout?
-//   if(RISING_EDGE(!GPIO_ReadInputDataBit(FB0_Z_PORT, FB0_Z_PIN))) {
+//   if(RISING_EDGE(!GPIO_ReadInputDataBit(FB1_Z_PORT, FB1_Z_PIN))) {
 //     // TODO: fix
 //     ctx->absoffset = -p;
 //     PIN(state)     = 3.0;
 
 //   }
-//   PIN(index)  = GPIO_ReadInputDataBit(FB0_Z_PORT, FB0_Z_PIN);
+//   PIN(index)  = GPIO_ReadInputDataBit(FB1_Z_PORT, FB1_Z_PIN);
 //   PIN(abs_pos) = mod(p + ctx->absoffset);
 // }
 
@@ -122,8 +122,8 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   struct enc_fb_pin_ctx_t *pins = (struct enc_fb_pin_ctx_t *)pin_ptr;
 
   //sample timer value and timer pins together, so we can calculate the quadrant of the timer
-  int32_t tim     = TIM_GetCounter(FB0_ENC_TIM);  //TODO: interrupt here?
-  uint32_t scgpio = FB0_A_PORT->IDR;
+  int32_t tim     = TIM_GetCounter(FB1_ENC_TIM);  //TODO: interrupt here?
+  uint32_t scgpio = FB1_A_PORT->IDR;
 
   float p = 0.0;
   int r   = (int)PIN(res);
@@ -142,14 +142,14 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   int q;
 
   //calculate quadrant of timer
-  if((scgpio & FB0_A_PIN)) {  //TODO: invert for v3... check: plot oquad vs quad
-    if(scgpio & FB0_B_PIN) {
+  if((scgpio & FB1_A_PIN)) {  //TODO: invert for v3... check: plot oquad vs quad
+    if(scgpio & FB1_B_PIN) {
       q = 1;
     } else {
       q = 2;
     }
   } else {
-    if(scgpio & FB0_B_PIN) {
+    if(scgpio & FB1_B_PIN) {
       q = 4;
     } else {
       q = 3;
@@ -180,16 +180,16 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
   PIN(qdiff) = qdiff;
 
-  PIN(a) = (scgpio & FB0_A_PIN) > 0;  //TODO: invert for v3
-  PIN(b) = (scgpio & FB0_B_PIN) > 0;
+  PIN(a) = (scgpio & FB1_A_PIN) > 0;  //TODO: invert for v3
+  PIN(b) = (scgpio & FB1_B_PIN) > 0;
 
   PIN(oquad) = q;
 
   p        = mod(tim * 2.0f * M_PI / (float)ctx->e_res);
   PIN(pos) = p;
 
-  if((PIN(en_index) > 0.0) && (FB0_ENC_TIM->SR & TIM_SR_CC3IF)) {
-    int cc         = FB0_ENC_TIM->CCR3;
+  if((PIN(en_index) > 0.0) && (FB1_ENC_TIM->SR & TIM_SR_CC3IF)) {
+    int cc         = FB1_ENC_TIM->CCR3;
     PIN(state)     = 3.0;
     ctx->absoffset = mod(cc * 2.0f * M_PI / (float)ctx->e_res);
     if(PIN(indexprint) > 0.0) {
@@ -198,7 +198,7 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
     }
   }
   PIN(abs_pos) = minus(p, ctx->absoffset);
-  PIN(index)   = GPIO_ReadInputDataBit(FB0_Z_PORT, FB0_Z_PIN);
+  PIN(index)   = GPIO_ReadInputDataBit(FB1_Z_PORT, FB1_Z_PIN);
 
   if(PIN(amp) > 0.25 || ABS(PIN(vel)) > 0.15) {
     PIN(error) = 0.0;
@@ -211,7 +211,7 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
   if(ctx->e_res != r) {
     ctx->e_res = r;
-    TIM_SetAutoreload(FB0_ENC_TIM, ctx->e_res - 1);
+    TIM_SetAutoreload(FB1_ENC_TIM, ctx->e_res - 1);
   }
 }
 

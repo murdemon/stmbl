@@ -18,6 +18,11 @@ INCDIRS += inc/comps
 INCDIRS += inc/comps/hw
 INCDIRS += inc/shared_comps
 INCDIRS += shared
+INCDIRS += lib/bsp
+INCDIRS += lib/soes
+INCDIRS += lib/soes-esi
+INCDIRS += lib/soes_hal_bsp
+INCDIRS += lib/cia402device
 
 SOURCES += src/main.c
 SOURCES += src/stm32f4xx_it.c
@@ -25,6 +30,20 @@ SOURCES += src/system_stm32f4xx.c #TODO: update this, system file from cmsis
 SOURCES += src/setup.c
 SOURCES += src/usb_cdc.c
 SOURCES += src/config.c
+SOURCES += src/ecatapp.c
+SOURCES += src/pdo_override.c
+
+SOURCES += lib/bsp/delay.c 
+SOURCES += lib/soes/esc.c
+SOURCES += lib/soes/ecat_slv.c
+SOURCES += lib/soes/hal/ax58100/esc_hw.c
+SOURCES += lib/cia402device/cia402device.c
+SOURCES += lib/soes_hal_bsp/spi.c
+SOURCES += lib/soes/esc_coe.c
+SOURCES += lib/soes_hal_bsp/rst.c
+SOURCES += lib/soes_hal_bsp/esc_irq.c
+SOURCES += lib/soes-esi/objectlist.c
+
 # SOURCES += src/hal_conf.c
 SOURCES += src/hal_tbl.c
 
@@ -101,7 +120,10 @@ SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_rcc.c
 SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_tim.c
 SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_usart.c
 SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_spi.c
+SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_syscfg.c
 SOURCES += $(PERIPH_DRV_DIR)/src/misc.c
+
+SOURCES += $(PERIPH_DRV_DIR)/src/stm32f4xx_exti.c
 
 SOURCES += lib/CMSIS/Device/ST/STM32F4xx/Source/startup_stm32f40_41xxx.s
 

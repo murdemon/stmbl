@@ -3,6 +3,7 @@ LV_SRC_COMPS += src/comps/hv.c
 LV_SRC_COMPS += src/comps/enc_cmd.c
 LV_SRC_COMPS += src/comps/o_fb.c
 LV_SRC_COMPS += src/comps/sserial.c
+LV_SRC_COMPS += src/comps/ethercat.c
 LV_SRC_COMPS += src/comps/yaskawa.c
 LV_SRC_COMPS += src/comps/encs.c
 LV_SRC_COMPS += src/comps/encf.c
@@ -24,6 +25,7 @@ LV_SHARED_COMPS += shared/comps/svm.c
 
 LV_SHARED_COMPS += shared/comps/vel.c
 LV_SHARED_COMPS += shared/comps/rev.c
+LV_SHARED_COMPS += shared/comps/ac_rev.c
 LV_SHARED_COMPS += shared/comps/hal_test.c
 # LV_SHARED_COMPS += shared/comps/dc.c
 LV_SHARED_COMPS += shared/comps/ypid.c
