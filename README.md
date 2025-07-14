@@ -79,15 +79,7 @@ eeprom.bin - EEPROM file for this configuratio of AX58100
 
 # STMBL pinout
 
-STM32 | AX58100 | 12p | 12p | AX58100 | STM32
-______|_________|_____|_____|_________|______
-                |+24V | +5V | +5
-                | GND | SCK |SINT(IRQ)| SWD SCK (PA14)
- PD0  |  SYNC0  | CRX | GND | GND
- PD1  |SCS(NSS) | CTX |SWDIO| SYNC1   | SWD IO (PA13)
- PB4  |  MISO   | MISO| NRST|
- PB5  |  MOSI   | MOSI| SCK |SCLK(SCK)| PB3
-
+<img src="./img/SMTBL_PIN.jpg" alt="image" width="300"/>
 
 
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  
