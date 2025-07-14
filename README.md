@@ -79,7 +79,7 @@ eeprom.bin - EEPROM file for this configuratio of AX58100
 
 # STMBL pinout
 
-<img src="./img/SMTBL_PIN.png" alt="image" width="300"/>
+<img src="./img/STMBL_PIN.png" alt="image" width="300"/>
 
 
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  
