@@ -2,9 +2,9 @@
 
 
 void rst_setup(void)
-{
+{return;
     /* Setup NRST as GPIO out and pull it high */
-    GPIO_InitTypeDef gpio;
+     GPIO_InitTypeDef gpio;
  
     RCC_AHB1PeriphClockCmd(ESC_RCC_APB1PERIPH_GPIOX_RSTN, ENABLE);
 
@@ -16,21 +16,23 @@ void rst_setup(void)
     GPIO_Init(ESC_GPIOX_RSTN, &gpio);
     
     rst_high();
+    
 }
 
 void rst_low(void)
-{    /* Set RSTN line low */
+{   return;
+     /* Set RSTN line low */
     GPIO_ResetBits(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN);
 }
 
 void rst_high(void)
-{
+{ return;
     /* Set RSTN line high */
     GPIO_SetBits(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN);
 }
 
 void rst_check_start(void)
-{
+{  return;
     /* Setup NRST as GPIO input and pull it high */
     GPIO_InitTypeDef gpio;
  
@@ -41,11 +43,12 @@ void rst_check_start(void)
     gpio.GPIO_Speed = GPIO_Speed_50MHz;
     gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(ESC_GPIOX_RSTN, &gpio);
+    
 }
 
 uint8_t is_esc_reset(void)
 {
     /* Check if ESC pulled RSTN line up */ 
-    return GPIO_ReadInputDataBit(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN) == Bit_SET;
+    return 1;// GPIO_ReadInputDataBit(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN) == Bit_SET;
 }
 

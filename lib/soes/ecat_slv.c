@@ -358,14 +358,13 @@ void ecat_slv_init (esc_cfg_t * config)
    ESC_config (config);
    /* Call HW init */
    ESC_init (config);
-   //uint32_t wdt = 0;
 
    /*  wait until ESC is started up */
-  // while (((ESCvar.DLstatus & 0x0001) == 0) || wdt > 10)
+   while ((ESCvar.DLstatus & 0x0001) == 0)
    {
-      ESC_read (ESCREG_DLSTATUS, (void *) &ESCvar.DLstatus,sizeof (ESCvar.DLstatus));
+      ESC_read (ESCREG_DLSTATUS, (void *) &ESCvar.DLstatus,
+                sizeof (ESCvar.DLstatus));
       ESCvar.DLstatus = etohs (ESCvar.DLstatus);
-   //   wdt ++ ;
    }
 
 #if USE_FOE

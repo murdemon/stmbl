@@ -1,5 +1,5 @@
 #include <string.h>
-#include "stm32f4xx_conf.h"
+#include "stm32f4xx.h"
 #include "spi.h"
 #include "usart.h"
 
@@ -15,7 +15,9 @@ static int et1100 = 1;
 static volatile DMA_PDI_transmission_state_t pdi_dma_transmission = NOT_STARTED;
 
 /* SPI DMA RX buffer */
+
 uint8_t pdo_rxbuf[PDO_TR_SIZE + RX_PADDING_SIZE] __attribute__((aligned (8)));
+uint8_t (*pdo_rxbuf_tmp)[100] = pdo_rxbuf;
 uint8_t * pdo_spi_rxbuf = pdo_rxbuf + RX_PADDING_SIZE;
 uint8_t * pdo_coe_rxbuf = pdo_rxbuf + RX_PADDING_SIZE + ADDR_SIZE + WAIT_SIZE;
 
@@ -178,6 +180,7 @@ void rxpdo_override(void)
 
 void on_rxpdo_transfer_finished(void)
 {
+    pdo_rxbuf_tmp = pdo_rxbuf;
     spi_dma_stop();
     ESCvar.ALevent = etohs ((uint16_t)*pdo_spi_rxbuf);
     

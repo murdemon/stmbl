@@ -5,12 +5,11 @@
 #include "stm32f4xx_conf.h"
 
 
-#define SCS_LOW                           1
-#define SCS_HIGH                          0
+#define SCS_LOW                           0
+#define SCS_HIGH                          1
 
 #define STM32F4
 #define AX58100
-
 
 #if defined (STM32F4)
 
@@ -18,8 +17,8 @@
   #define ESC_RCC_APB2PERIPH_SPIX         RCC_APB2Periph_SPI1
   #define ESC_GPIOX_AF_SPIx               GPIO_AF_SPI1
 
-  #define ESC_RCC_APB1PERIPH_GPIOX_CTRL   RCC_AHB1Periph_GPIOB
-  #define ESC_GPIOX_CTRL                  GPIOB
+  #define ESC_RCC_APB1PERIPH_GPIOX_CTRL   RCC_AHB1Periph_GPIOA
+  #define ESC_GPIOX_CTRL                  GPIOA
   
   #define ESC_GPIO_Pin_SCK                GPIO_Pin_3
   #define ESC_GPIO_PinSourceSCK           GPIO_PinSource3
@@ -30,9 +29,9 @@
   #define ESC_GPIO_Pin_MOSI               GPIO_Pin_5
   #define ESC_GPIO_PinSource_MOSI         GPIO_PinSource5
 
-  #define ESC_RCC_APB1PERIPH_GPIOX_CS     RCC_AHB1Periph_GPIOD
-  #define ESC_GPIOX_CS                    GPIOD
-  #define ESC_GPIO_Pin_CS                 GPIO_Pin_1
+  #define ESC_RCC_APB1PERIPH_GPIOX_CS     RCC_AHB1Periph_GPIOA
+  #define ESC_GPIOX_CS                    GPIOA
+  #define ESC_GPIO_Pin_CS                 GPIO_Pin_13
 
 #else
   #error "Platform not supported"

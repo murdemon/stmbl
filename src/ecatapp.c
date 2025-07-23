@@ -8,7 +8,7 @@
 #include "pdo_override.h"
 #include "cia402device.h"
 #include "ecatapp.h"
-#include "stm32f4xx_conf.h"
+
 
 /* CANopen Object Dictionary */
 _Objects    Obj;
@@ -65,11 +65,11 @@ void EXTI1_IRQHandler(void)
 
 static uint8_t pdi_irq_flag = 0;
 
-void EXTI3_IRQHandler(void)
+void EXTI0_IRQHandler(void)
 {
-    if(EXTI_GetITStatus(EXTI_Line3) != RESET)
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
-        EXTI_ClearITPendingBit(EXTI_Line3);
+        EXTI_ClearITPendingBit(EXTI_Line0);
         pdi_irq_flag = 1;
     }
 }
@@ -78,7 +78,7 @@ void EXTI3_IRQHandler(void)
 void ecatapp_init(void) {
     ecat_slv_init(&config);
     cia402_init(&cia402axis);
-    init_override();
+	init_override();
 }
 
 uint16_t check_dc_handler (void)
@@ -134,13 +134,13 @@ void app_cia402_mc()
 {
     // TODO motion control here
     Obj.Position_actual = Obj.Target_position; // dummy loopback
-    timeout = 0;
     // csp is the only supported mode for now
     *(cia402axis.statusword) |= CIA402_STATUSWORD_CSP_DRIVE_FOLLOWS_COMMAND;
 }
  
 void ecatapp_loop(void)
 {
+    Obj.Mode_of_operation_display = Obj.Modes_of_operation;
     // stack in mixed mode
     if (sync0_irq_flag) {
         ESC_updateALevent();        
@@ -156,8 +156,8 @@ void ecatapp_loop(void)
         }
         pdi_irq_flag = 0;
     } else {
-        // ecat_slv_worker(ESCREG_ALEVENT_CONTROL | ESCREG_ALEVENT_SMCHANGE
-        //                 | ESCREG_ALEVENT_SM0 | ESCREG_ALEVENT_SM1);
+    //     ecat_slv_worker(ESCREG_ALEVENT_CONTROL | ESCREG_ALEVENT_SMCHANGE
+     //                    | ESCREG_ALEVENT_SM0 | ESCREG_ALEVENT_SM1);
         ecat_slv_poll();
         DIG_process(DIG_PROCESS_WD_FLAG);
     }

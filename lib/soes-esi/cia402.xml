@@ -1158,16 +1158,6 @@
             <Desc>DC-Synchron</Desc>
             <AssignActivate>#x300</AssignActivate>
           </OpMode>
-          <OpMode>
-            <Name>SM-Synchron</Name>
-            <Desc>SM-Synchron</Desc>
-            <AssignActivate>#x000</AssignActivate>
-          </OpMode>
-          <OpMode>
-            <Name>DC</Name>
-            <Desc>DC-Synchron</Desc>
-            <AssignActivate>#x300</AssignActivate>
-          </OpMode>
         </Dc>
         <Eeprom>
           <ByteSize>2048</ByteSize>

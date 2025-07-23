@@ -77,9 +77,48 @@ there were several other components that have been replaced because they have be
 STMBL_ECAT.xml - Description of Ethercat device
 eeprom.bin - EEPROM file for this configuratio of AX58100
 
+
+# CiA 402 dummy servo drive
+
+## Using AX58100 EtherCAT board with STM32 over SPI
+
+This project is CiA 402 csp dummy on STM32F405x. Dummy as in loopback: does nothing, received target position is reported as actual position. CiA 402 is implemented,>
+
+The stuff I am doing aims at STMBL rather than ODrive (hence I started with oldschool StdPeriph libs), but both projects use STM32F405. One EtherCAT codebase done pr>
+
+I have been working on that for some time now, and this is where I got:
+- software licensing prohibits us from using Beckhoff SSC for open source, it leaves us SOES with GPL. For code generation tool, one can purchase EtherCAT SDK from r>
+- hardware (boards designed by me) seems to be working. Slave nodes are reaching OP on both LAN9252 and AX58100
+- measured performance shows that we better focus on AX58100. In freerun, with STM32F40x SPI1 at max speed, ecat_slv() loop takes < 20 us so we can easily get linuxc>
+Just check out https://github.com/OpenEtherCATsociety/SOES/blob/master/soes/hal/rt-kernel-twrk60/esc_hw.c (ET1100 code) vs https://github.com/OpenEtherCATsociety/SOE>
+- CiA 402 is implemented and works with TwinCAT NC, SOES works in mixed mode with DC sync
+
+## Project layout 
+
+- `/esi_ref` contains relevant ESI file examples from misc sources
+- `/lib/cia402` is CiA 402 servodrive state machine implementation, indepenent from used CANopen implementation
+- `/lib/soes` is copied OpenEthercatSociety/SOES/soes content for easier future upgradeability.
+- `/lib/soes/hal/ax58100` has added HAL for AX58100 over SPI
+- `/lib/soes_hal_bsp` contains PDI drivers (for STM32F4 SPI with StdPeriph)
+- `/lib/soes-esi` contains CoE Object Dictionary (OD), and EtherCAT Slave Info (ESI)
+- `/lib/soes-esi/ax58100_patched` contains ESI files prepared for ASIX 58100 ESC by running `patch_esi.py` script
+
+
+## Hardware
+
+This projec uses AX58100 - SPI breakout rev 1
+
 # STMBL pinout
 
-<img src="./img/STMBL_PIN.png" alt="image" width="300"/>
+|STM32 | AX58100 | 12p | 12p | AX58100 | STM32          |
+|______|_________|_____|_____|_________|________________|
+|                |+24V | +5V |         |                |
+|                | GND | SCK | SYNC1   | SWD SCK (PA14) |
+| PD0  |  SINT   | CRX | GND |         |                |
+| PD1  |  SYNC0  | CTX |SWDIO| NSS     | SWD IO (PA13)  |
+| PB4  |  MISO   | MISO| NRST|         |                |
+| PB5  |  MOSI   | MOSI| SCK | SCLK    | PB3            |
+
 
 
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  

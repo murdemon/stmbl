@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <EtherCATInfo>
   <Vendor>
     <Id>4919</Id>
@@ -1013,7 +1012,7 @@
                   <DefaultValue>0</DefaultValue>
                 </Info>
                 <Flags>
-                  <Access>ro</Access>
+                  <Access>rw</Access>
                   <PdoMapping>R</PdoMapping>
                 </Flags>
               </Object>
@@ -1052,7 +1051,7 @@
                   <DefaultValue>0</DefaultValue>
                 </Info>
                 <Flags>
-                  <Access>ro</Access>
+                  <Access>rw</Access>
                   <PdoMapping>R</PdoMapping>
                 </Flags>
               </Object>
@@ -1148,16 +1147,6 @@
           <CoE SdoInfo="true" PdoAssign="false" PdoConfig="false" PdoUpload="true" CompleteAccess="false" />
         </Mailbox>
         <Dc>
-          <OpMode>
-            <Name>SM-Synchron</Name>
-            <Desc>SM-Synchron</Desc>
-            <AssignActivate>#x000</AssignActivate>
-          </OpMode>
-          <OpMode>
-            <Name>DC</Name>
-            <Desc>DC-Synchron</Desc>
-            <AssignActivate>#x300</AssignActivate>
-          </OpMode>
           <OpMode>
             <Name>SM-Synchron</Name>
             <Desc>SM-Synchron</Desc>

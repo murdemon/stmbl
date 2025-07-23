@@ -112,7 +112,8 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   ecatapp_loop();
   
 
-  Obj.Position_actual = PIN(pos_fb);
+//  Obj.Position_actual = PIN(pos_fb);
+  Obj.Position_actual = Obj.Target_position;
   PIN(pos_cmd) = Obj.Target_position;
   PIN(enable) = (Obj.Control_Word & CIA402_CONTROLWORD_ENABLE_OPERATION);
 

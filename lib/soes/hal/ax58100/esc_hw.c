@@ -148,8 +148,8 @@ void ESC_reset (void)
 
 void ESC_init (const esc_cfg_t * config)
 {
-//   rst_setup();
-//   rst_high();
+   rst_setup();
+   rst_high();
    spi_setup();
    et1100 = 1;
    read_termination[MAX_READ_SIZE - 1] = 0xFF;
