@@ -1,0 +1,18 @@
+{    
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceRoot}/obj_app/${workspaceFolderBasename}.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "stutil",
+            "preLaunchTask" : "Build",
+            "preRestartCommands" : [ "load", "enable breakpoint", "monitor reset" ],
+            "showDevDebugOutput" : "raw",
+            "svdFile" : "${workspaceRoot}/STM32F407.svd"
+        }
+    ]
+}
