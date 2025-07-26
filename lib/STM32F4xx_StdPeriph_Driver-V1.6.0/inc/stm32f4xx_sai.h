@@ -2,14 +2,14 @@
   ******************************************************************************
   * @file    stm32f4xx_sai.h
   * @author  MCD Application Team
-  * @version V1.6.0
-  * @date    10-July-2015
+  * @version V1.4.0
+  * @date    04-August-2014
   * @brief   This file contains all the functions prototypes for the SAI 
   *          firmware library.  
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@
 /** @addtogroup SAI
   * @{
   */ 
-#if defined (STM32F40_41xxx) || defined (STM32F427_437xx) || defined (STM32F429_439xx) || defined (STM32F401xx) || defined (STM32F411xE) || defined (STM32F446xx) || defined (STM32F469_479xx)
+
 /* Exported types ------------------------------------------------------------*/
 
 /** 
@@ -153,22 +153,11 @@ typedef struct
   * @{
   */
 
-#if defined(STM32F446xx)
-#define IS_SAI_PERIPH(PERIPH) (((PERIPH) == SAI1) || (PERIPH) == SAI2)
-
-#define IS_SAI_BLOCK_PERIPH(PERIPH) (((PERIPH) == SAI1_Block_A) || \
-                                     ((PERIPH) == SAI1_Block_B) || \
-                                     ((PERIPH) == SAI2_Block_A) || \
-                                     ((PERIPH) == SAI2_Block_B))
-#endif /* STM32F446xx */
-
-#if defined (STM32F40_41xxx) || defined (STM32F427_437xx) || defined (STM32F429_439xx) || defined (STM32F401xx) || defined (STM32F411xE) || defined (STM32F469_479xx)
-
 #define IS_SAI_PERIPH(PERIPH) ((PERIPH) == SAI1)
 
 #define IS_SAI_BLOCK_PERIPH(PERIPH) (((PERIPH) == SAI1_Block_A) || \
                                      ((PERIPH) == SAI1_Block_B))
-#endif /* STM32F40_41xxx || STM32F427_437xx || STM32F429_439xx || STM32F401xx || STM32F411xE || STM32F469_479xx */ 
+
 
 /** @defgroup SAI_Block_Mode 
   * @{
@@ -605,19 +594,18 @@ void SAI_ClearITPendingBit(SAI_Block_TypeDef* SAI_Block_x, uint32_t SAI_IT);
 FunctionalState SAI_GetCmdStatus(SAI_Block_TypeDef* SAI_Block_x);
 uint32_t SAI_GetFIFOStatus(SAI_Block_TypeDef* SAI_Block_x);
 
-#endif /* STM32F40_41xxx || STM32F427_437xx || STM32F429_439xx || STM32F401xx || STM32F411xE || STM32F446xx || STM32F469_479xx */ 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif /*__STM32F4xx_SAI_H */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

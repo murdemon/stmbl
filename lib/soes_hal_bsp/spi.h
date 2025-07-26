@@ -27,9 +27,9 @@
   #define ESC_GPIO_Pin_MOSI               GPIO_Pin_5
   #define ESC_GPIO_PinSource_MOSI         GPIO_PinSource5
 
-  #define ESC_RCC_APB1PERIPH_GPIOX_CS     RCC_AHB1Periph_GPIOA
-  #define ESC_GPIOX_CS                    GPIOA
-  #define ESC_GPIO_Pin_CS                 GPIO_Pin_9
+  #define ESC_RCC_APB1PERIPH_GPIOX_CS     RCC_AHB1Periph_GPIOC
+  #define ESC_GPIOX_CS                    GPIOC
+  #define ESC_GPIO_Pin_CS                 GPIO_Pin_4
 
 #else
   #error "Platform not supported"

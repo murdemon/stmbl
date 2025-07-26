@@ -312,7 +312,7 @@ void ecat_slv_poll (void)
    ESC_sm_act_event();
 
    /* Check mailboxes */
-   if (ESC_mbxprocess())
+   if (ESC_mbxprocess()) 
    {
       ESC_coeprocess();
 #if USE_FOE

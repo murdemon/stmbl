@@ -34,6 +34,7 @@ SOURCES += src/ecatapp.c
 SOURCES += src/pdo_override.c
 
 SOURCES += lib/bsp/delay.c 
+SOURCES += lib/bsp/usart.c
 SOURCES += lib/soes/esc.c
 SOURCES += lib/soes/ecat_slv.c
 SOURCES += lib/soes/hal/ax58100/esc_hw.c

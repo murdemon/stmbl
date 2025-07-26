@@ -12,7 +12,7 @@ int __io_putchar(int c) {
 }
 
 
-int _write(int file, char *ptr, int len)
+int _write2(int file, char *ptr, int len)
 {
 	int DataIdx;
 

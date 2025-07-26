@@ -113,7 +113,7 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   Obj.Position_actual = Obj.Target_position;
   PIN(pos_cmd) = Obj.Target_position;
   PIN(enable) = (Obj.Control_Word & CIA402_CONTROLWORD_ENABLE_OPERATION);
-
+/*
   if(timeout > PIN(timeout)) {  //TODO: clamping
     PIN(connected) = 0;
     PIN(error)     = 1;
@@ -125,9 +125,10 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
     PIN(out3)      = 0;
     PIN(enable)    = 0;
   } else {
+*/
     PIN(connected) = 1;
     PIN(error)     = 0;
-  }
+//  }
 
   timeout++;
 

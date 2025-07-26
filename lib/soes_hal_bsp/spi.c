@@ -28,6 +28,7 @@ void spi_gpio_setup(void)
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
     /* SPI GPIO Configuration --------------------------------------------------*/
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI1);
@@ -59,12 +60,12 @@ void spi_gpio_setup(void)
     GPIO_Init(GPIOB, &gpio);
 
     /* CS */
-    gpio.GPIO_Pin   = GPIO_Pin_9; 
+    gpio.GPIO_Pin   = GPIO_Pin_4; 
     gpio.GPIO_Mode  = GPIO_Mode_OUT;
     gpio.GPIO_Speed = GPIO_Speed_100MHz;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd  = GPIO_PuPd_DOWN;
-    GPIO_Init(GPIOA, &gpio);
+    GPIO_Init(GPIOC, &gpio);
 
 
     /*Spare SYNC1*/

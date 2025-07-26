@@ -2,14 +2,14 @@
 
 
 static uint32_t ticksPerUs = MAX_FREQ_TICKS_PER_US;  // max STM32F40x freq by default
-volatile uint32_t timer_ms = 0;
+static uint32_t timer_ms = 0;
 
 
-void SysTick_Handler()
+/*void SysTick_Handler()
 {
     timer_ms++;
 }
-
+*/
 
 uint32_t delay_init(void) {
 	uint32_t c;
