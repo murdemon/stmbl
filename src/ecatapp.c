@@ -52,6 +52,8 @@ cia402_axis_t cia402axis = {
 
 // **************************************************************
 
+
+static uint8_t pdi_irq_flag = 0;
 static uint8_t sync0_irq_flag = 0;
 
 void EXTI1_IRQHandler(void)
@@ -61,9 +63,9 @@ void EXTI1_IRQHandler(void)
         EXTI_ClearITPendingBit(EXTI_Line1);
         sync0_irq_flag = 1;
     }
+
 }
 
-static uint8_t pdi_irq_flag = 0;
 
 void EXTI0_IRQHandler(void)
 {
@@ -72,6 +74,7 @@ void EXTI0_IRQHandler(void)
         EXTI_ClearITPendingBit(EXTI_Line0);
         pdi_irq_flag = 1;
     }
+
 }
 // **************************************************************
 
@@ -156,8 +159,8 @@ void ecatapp_loop(void)
         }
         pdi_irq_flag = 0;
     } else {
-    //     ecat_slv_worker(ESCREG_ALEVENT_CONTROL | ESCREG_ALEVENT_SMCHANGE
-     //                    | ESCREG_ALEVENT_SM0 | ESCREG_ALEVENT_SM1);
+//         ecat_slv_worker(ESCREG_ALEVENT_CONTROL | ESCREG_ALEVENT_SMCHANGE
+//                         | ESCREG_ALEVENT_SM0 | ESCREG_ALEVENT_SM1);
         ecat_slv_poll();
         DIG_process(DIG_PROCESS_WD_FLAG);
     }

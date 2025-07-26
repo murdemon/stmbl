@@ -37,7 +37,16 @@
 #define ESCREG_SYNC_START_TIME     0x0990
 // measured with 21MHz SPI PDI
 #define SYNC_START_OFFSET     2342840 
-   
+ 
+#define SYSTICK_LOAD (SystemCoreClock/1000000U)
+#define SYSTICK_DELAY_CALIB (SYSTICK_LOAD >> 1)
+
+#define DELAY_US(us) \
+    do { \
+         uint32_t start = SysTick->VAL; \
+         uint32_t ticks = (us * SYSTICK_LOAD)-SYSTICK_DELAY_CALIB;  \
+         while((start - SysTick->VAL) < ticks); \
+    } while (0)
 
 static int et1100 = -1;
 static uint8_t read_termination[MAX_READ_SIZE] = { 0 };
@@ -75,8 +84,9 @@ void ESC_read (uint16_t address, void *buf, uint16_t len)
     if (len > MAX_READ_SIZE) { return; }
 
    /* Select device. */
+   //DELAY_US(2);
    spi_select (et1100);
-
+   
    /* Write address and command to device. */
    esc_address (address, ESC_CMD_READ);
 
@@ -86,9 +96,9 @@ void ESC_read (uint16_t address, void *buf, uint16_t len)
     */
    spi_bidirectionally_transfer (et1100, buf, read_termination +
                                  (MAX_READ_SIZE - len), len);
-
    /* Un-select device. */
    spi_unselect (et1100);
+   
 }
 
 /** ESC write function used by the Slave stack.
@@ -103,6 +113,7 @@ void ESC_write (uint16_t address, void *buf, uint16_t len)
    spi_select (et1100);
    /* Write address and command to device. */
    esc_address (address, ESC_CMD_WRITE);
+    //DELAY_US(1000);
    /* Write data. */
    spi_write (et1100, buf, len);
    /* Un-select device. */

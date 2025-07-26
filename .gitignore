@@ -18,8 +18,6 @@
 *.jdebug
 *.jdebug.user
 
-.vscode
-
 tools/pycrc*
 
 sim/sim

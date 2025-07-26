@@ -120,7 +120,9 @@ void USART_COMInit(USART_InitTypeDef* USART_InitStruct)
   GPIO_InitStructure.GPIO_Pin = APP_USART_RX_PIN;
   GPIO_Init(APP_USART_RX_GPIO_PORT, &GPIO_InitStructure);
 
+  
   USART_Init(APP_USART, USART_InitStruct);
+  
   USART_Cmd(APP_USART, ENABLE);
 }
 
@@ -134,12 +136,15 @@ void APP_USART_Init() {
   - Hardware flow control disabled (RTS and CTS signals)
   - Receive and transmit enabled
   */
+
+
   USART_InitStructure.USART_BaudRate = 115200;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No;
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
   // TX on PC6
 
   USART_COMInit(&USART_InitStructure);

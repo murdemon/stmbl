@@ -49,6 +49,6 @@ void rst_check_start(void)
 uint8_t is_esc_reset(void)
 {
     /* Check if ESC pulled RSTN line up */ 
-    return 1;// GPIO_ReadInputDataBit(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN) == Bit_SET;
+    return GPIO_ReadInputDataBit(ESC_GPIOX_RSTN, ESC_GPIO_Pin_RSTN) == Bit_SET;
 }
 

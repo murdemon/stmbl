@@ -197,7 +197,7 @@ int main(void) {
   {
     hal_run_nrt();
     //cdc_poll();
-    Wait(1);
+    //Wait(1);
   }
 }
 

@@ -7,10 +7,8 @@
 
 #define SCS_LOW                           0
 #define SCS_HIGH                          1
-
 #define STM32F4
 #define AX58100
-
 #if defined (STM32F4)
 
   #define SPIX_ESC                        SPI1 
@@ -31,7 +29,7 @@
 
   #define ESC_RCC_APB1PERIPH_GPIOX_CS     RCC_AHB1Periph_GPIOA
   #define ESC_GPIOX_CS                    GPIOA
-  #define ESC_GPIO_Pin_CS                 GPIO_Pin_13
+  #define ESC_GPIO_Pin_CS                 GPIO_Pin_9
 
 #else
   #error "Platform not supported"

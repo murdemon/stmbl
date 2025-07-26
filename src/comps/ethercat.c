@@ -96,7 +96,7 @@ extern _Objects    Obj;
 static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   struct ethercat_pin_ctx_t *pins = (struct ethercat_pin_ctx_t *)pin_ptr;
 
-  delay_init();
+//  delay_init();
   ecatapp_init();
 
   PIN(timeout) = 100.0;  // 20khz / 1khz * 2 reads = 40
@@ -107,10 +107,7 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
 static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   struct ethercat_pin_ctx_t *pins = (struct ethercat_pin_ctx_t *)pin_ptr;
-
-
   ecatapp_loop();
-  
 
 //  Obj.Position_actual = PIN(pos_fb);
   Obj.Position_actual = Obj.Target_position;
@@ -147,9 +144,9 @@ static void nrt(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
 const hal_comp_t ethercat_comp_struct = {
     .name      = "ethercat",
-    .nrt       = 0,//nrt,
-    .rt        = 0,
-    .frt       = frt_func,
+    .nrt       = 0,
+    .rt        = frt_func,
+    .frt       = 0,
     .nrt_init  = 0,
     .hw_init   = hw_init,
     .rt_start  = 0,
