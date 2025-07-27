@@ -65,10 +65,12 @@ void TIM_SLAVE_HANDLER(void) {
 void DMA2_Stream0_IRQHandler(void) {
   DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
   hal_run_rt();
-  if(DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0) == SET) {
+/*  if(DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0) == SET) {
     hal_stop();
     hal.hal_state = RT_TOO_LONG;
+
   }
+*/
 }
 
 void bootloader(char *ptr) {
