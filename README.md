@@ -112,6 +112,10 @@ This projec uses AX58100 - SPI breakout rev 1
 
 <img src="./img/STMBL_PIN.png" alt="image" width="300"/>
 
+<img src="./img/stmbl_pins.png" alt="image" width="300"/>
+
+AX58100 from Aliexpress
+<img src="./img/ax58100.png" alt="image" width="300"/>
 
 #STMBL PMSM ethercat config
 
