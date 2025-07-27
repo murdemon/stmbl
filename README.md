@@ -110,14 +110,7 @@ This projec uses AX58100 - SPI breakout rev 1
 
 # STMBL pinout
 
-|STM32 | AX58100 | 12p | 12p | AX58100 | STM32          |  
-|______|_________|_____|_____|_________|________________|  
-|      |         |+24V | +5V |         |                |  
-|      |         | GND | SCK | SYNC1   | SWD SCK (PA14) |  
-| PD0  |  SINT   | CRX | GND |         |                |  
-| PD1  |  SYNC0  | CTX |SWDIO| NSS     | SWD IO (PA13)  |  
-| PB4  |  MISO   | MISO| NRST|         |                |  
-| PB5  |  MOSI   | MOSI| SCK | SCLK    | PB3            |  
+<img src="./img/STMBL_PIN.png" alt="image" width="300"/>
 
 
 #STMBL PMSM ethercat config
