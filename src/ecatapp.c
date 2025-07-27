@@ -149,6 +149,7 @@ void ecatapp_loop(void)
         ESC_updateALevent();        
         DIG_process (DIG_PROCESS_APP_HOOK_FLAG | DIG_PROCESS_INPUTS_FLAG);
         sync0_irq_flag = 0;
+	timeout = 0;
     }
     if (pdi_irq_flag) {
         ESC_updateALevent();
@@ -158,6 +159,7 @@ void ecatapp_loop(void)
             DIG_process (DIG_PROCESS_OUTPUTS_FLAG | DIG_PROCESS_APP_HOOK_FLAG | DIG_PROCESS_INPUTS_FLAG);
         }
         pdi_irq_flag = 0;
+	timeout = 0;
     } else {
 //         ecat_slv_worker(ESCREG_ALEVENT_CONTROL | ESCREG_ALEVENT_SMCHANGE
 //                         | ESCREG_ALEVENT_SM0 | ESCREG_ALEVENT_SM1);

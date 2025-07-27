@@ -15,13 +15,13 @@ void spi_gpio_setup(void)
  
 
      // Assuming PA13 and PA14 are SWD pins
-     /*GPIO_InitTypeDef GPIO_InitStructure;
+     GPIO_InitTypeDef GPIO_InitStructure;
      RCC_APB2PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); // Enable clock for GPIOA
      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14;
      GPIO_InitStructure.GPIO_Mode = GPIO_OType_PP; // Push-pull output
      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
      GPIO_Init(GPIOA, &GPIO_InitStructure);
-    */
+    
 
     GPIO_InitTypeDef gpio;
 
@@ -60,22 +60,22 @@ void spi_gpio_setup(void)
     GPIO_Init(GPIOB, &gpio);
 
     /* CS */
-    gpio.GPIO_Pin   = GPIO_Pin_4; 
+    gpio.GPIO_Pin   = GPIO_Pin_13; 
     gpio.GPIO_Mode  = GPIO_Mode_OUT;
     gpio.GPIO_Speed = GPIO_Speed_100MHz;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd  = GPIO_PuPd_DOWN;
-    GPIO_Init(GPIOC, &gpio);
+    GPIO_Init(GPIOA, &gpio);
 
 
     /*Spare SYNC1*/
-    /*gpio.GPIO_Pin   = GPIO_Pin_14; 
+    gpio.GPIO_Pin   = GPIO_Pin_14; 
     gpio.GPIO_Mode  = GPIO_Mode_IN;
     gpio.GPIO_Speed = GPIO_Speed_50MHz;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &gpio);
-    */
+    
 }
 
 void spi_setup(void)
