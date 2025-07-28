@@ -110,33 +110,36 @@ This projec uses AX58100 - SPI breakout rev 1
 
 # STMBL pinout
 
-<img src="./img/STMBL_PIN.png" alt="image" width="300"/>
+|STM32 | AX58100 | 12p | 12p | AX58100 | STM32          | 
+|______|_________|_____|_____|_________|________________| 
+|      |         |+24V | +5V |         |                | 
+|      |         | GND | SCK | SYNC1   | SWD SCK (PA14) | 
+| PD0  |  SINT   | CRX | GND |         |                | 
+| PD1  |  SYNC0  | CTX |SWDIO| NSS     | SWD IO (PA13)  | 
+| PB4  |  MISO   | MISO| NRST|         |                | 
+| PB5  |  MOSI   | MOSI| SCK | SCLK    | PB3            | 
 
-<img src="./img/stmbl_pins.png" alt="image" width="300"/>
-
-AX58100 from Aliexpress
-<img src="./img/ax58100.png" alt="image" width="300"/>
 
 #STMBL PMSM ethercat config
 
-link pid  
-link pmsm  
-link smartabs_fb0  
-link misc  
-link jog_cmd  
-conf0.r = 1.192114 # append to config  
-conf0.l = 0.017882 # append to config  
-conf0.polecount = 5.000000 # append to config  
-conf0.mot_fb_offset = -1.878222 # append to config  
-conf0.psi = 0.055813 # append to config  
-conf0.j = 0.000365 # append to config  
-conf0.o = -0.004034 # append to config  
-conf0.d = 0.000394 # append to config  
-conf0.f = 0.045917 # append to config  
-load ethercat  
-ethercat0.rt_prio = 1.0  
-ethercat0.frt_prio = 1.0  
-term0.wave4 = ethercat0.pos_cmd  
+link pid 
+link pmsm 
+link smartabs_fb0 
+link misc 
+link jog_cmd 
+conf0.r = 1.192114 # append to config 
+conf0.l = 0.017882 # append to config 
+conf0.polecount = 5.000000 # append to config 
+conf0.mot_fb_offset = -1.878222 # append to config 
+conf0.psi = 0.055813 # append to config 
+conf0.j = 0.000365 # append to config 
+conf0.o = -0.004034 # append to config 
+conf0.d = 0.000394 # append to config 
+conf0.f = 0.045917 # append to config 
+load ethercat 
+ethercat0.rt_prio = 1.0 
+ethercat0.frt_prio = 1.0 
+term0.wave4 = ethercat0.pos_cmd 
 
 
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  

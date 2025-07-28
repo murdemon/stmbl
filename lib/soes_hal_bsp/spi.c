@@ -21,7 +21,7 @@ void spi_gpio_setup(void)
      GPIO_InitStructure.GPIO_Mode = GPIO_OType_PP; // Push-pull output
      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
      GPIO_Init(GPIOA, &GPIO_InitStructure);
-    
+ 
 
     GPIO_InitTypeDef gpio;
 
@@ -59,6 +59,7 @@ void spi_gpio_setup(void)
     gpio.GPIO_PuPd  = GPIO_PuPd_UP;
     GPIO_Init(GPIOB, &gpio);
 
+
     /* CS */
     gpio.GPIO_Pin   = GPIO_Pin_13; 
     gpio.GPIO_Mode  = GPIO_Mode_OUT;
@@ -71,11 +72,68 @@ void spi_gpio_setup(void)
     /*Spare SYNC1*/
     gpio.GPIO_Pin   = GPIO_Pin_14; 
     gpio.GPIO_Mode  = GPIO_Mode_IN;
-    gpio.GPIO_Speed = GPIO_Speed_50MHz;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_0; 
+    gpio.GPIO_Mode  = GPIO_Mode_AIN;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_8; 
+    gpio.GPIO_Mode  = GPIO_Mode_AIN;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_9; 
+    gpio.GPIO_Mode  = GPIO_Mode_AIN;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_10; 
+    gpio.GPIO_Mode  = GPIO_Mode_AIN;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_15; 
+    gpio.GPIO_Mode  = GPIO_Mode_AIN;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_6; 
+    gpio.GPIO_Mode  = GPIO_Mode_OUT;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_OType = GPIO_OType_PP;
+    gpio.GPIO_PuPd  = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_7; 
+    gpio.GPIO_Mode  = GPIO_Mode_OUT;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_OType = GPIO_OType_PP;
+    gpio.GPIO_PuPd  = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &gpio);
+
+    gpio.GPIO_Pin   = GPIO_Pin_9; 
+    gpio.GPIO_Mode  = GPIO_Mode_OUT;
+    gpio.GPIO_Speed = GPIO_Speed_100MHz;
+    gpio.GPIO_OType = GPIO_OType_PP;
+    gpio.GPIO_PuPd  = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &gpio);
     
+    GPIO_SetBits(GPIOB, GPIO_Pin_6);
+    GPIO_SetBits(GPIOB, GPIO_Pin_7);
+    GPIO_SetBits(GPIOB, GPIO_Pin_9);
+
+
+
 }
 
 void spi_setup(void)

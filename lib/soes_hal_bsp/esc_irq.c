@@ -65,7 +65,6 @@ void EXTILine1_Disable(void)
 void EXTILine3_Config(void)
 {
     
-    
     EXTI_InitTypeDef   EXTI_InitStructure;
     GPIO_InitTypeDef   GPIO_InitStructure;
     NVIC_InitTypeDef   NVIC_InitStructure;
@@ -101,7 +100,6 @@ void EXTILine3_Config(void)
 
 void EXTILine3_Disable(void)
 {
-   
    
 
     EXTI_InitTypeDef   EXTI_InitStructure;

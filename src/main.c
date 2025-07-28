@@ -113,6 +113,15 @@ COMMAND("reset", nv_reset, "reset STMBL");
 
 void about(char *ptr) {
   printf("######## software info ########\n");
+  if (RCC->CR & RCC_CR_HSERDY) {printf("HSE Started OK\n");}
+  else {printf("HSE not started\n");}
+
+  if (RCC->CR & RCC_CR_PLLRDY) {printf("PLL Ready OK\n");}
+  else {printf("PLL not ready\n");}
+
+  printf("SPI1-CR1: %i\n",SPI1->CR1);
+  printf("SPI1-CR2: %i\n",SPI1->CR2);
+
   printf(
       "%s v%i.%i.%i %s\n",
       version_info.product_name,

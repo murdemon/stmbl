@@ -143,7 +143,6 @@ void app_cia402_mc()
  
 void ecatapp_loop(void)
 {
-    Obj.Mode_of_operation_display = Obj.Modes_of_operation;
     // stack in mixed mode
     if (sync0_irq_flag) {
         ESC_updateALevent();        
