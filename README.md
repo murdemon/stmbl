@@ -119,11 +119,21 @@ AX58100 from Aliexpress
 
 #STMBL PMSM ethercat config
 
+
 link pid  
 link pmsm  
 link smartabs_fb0  
 link misc  
-link jog_cmd  
+link sserial  
+load ethercat  
+ethercat0.rt_prio = 1.0  
+ethercat0.frt_prio = 1.0  
+fault0.en = ethercat0.enable  
+ethercat0.pos_fb = smartabs0.encoder_vals  
+linrev0.cmd_in = ethercat0.pos_cmd  
+linrev0.cmd_d_in = ethercat0.pos_cmd_d  
+fault0.cmd_error = 0  
+linrev0.scale = 8388608  
 conf0.r = 1.192114 # append to config  
 conf0.l = 0.017882 # append to config  
 conf0.polecount = 5.000000 # append to config  
@@ -133,10 +143,7 @@ conf0.j = 0.000365 # append to config
 conf0.o = -0.004034 # append to config  
 conf0.d = 0.000394 # append to config  
 conf0.f = 0.045917 # append to config  
-load ethercat  
-ethercat0.rt_prio = 1.0  
-ethercat0.frt_prio = 1.0  
-term0.wave4 = ethercat0.pos_cmd  
+
 
 
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  

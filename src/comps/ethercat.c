@@ -77,9 +77,15 @@ HAL_PIN(pos_advance);
 //TODO: move to ctx
 struct ethercat_ctx_t {
   uint32_t phase;
+  float cnt_period;
+  float counter;
+  float pos;
+  float pos_was;
+  float delta;
 };
 
 extern uint32_t timeout;
+extern uint8_t sync0_flag;
 
 #pragma pack(push, 1)
 
@@ -94,7 +100,7 @@ extern _Objects    Obj;
 //TODO:
 
 static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
-  struct ethercat_pin_ctx_t *pins = (struct ethercat_pin_ctx_t *)pin_ptr;
+struct ethercat_pin_ctx_t *pins = (struct ethercat_pin_ctx_t *)pin_ptr;
 
 //  delay_init();
   ecatapp_init();
@@ -106,16 +112,23 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
 
 static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
+
+  struct ethercat_ctx_t * ctx = (struct ethercat_ctx_t *)ctx_ptr;
   struct ethercat_pin_ctx_t *pins = (struct ethercat_pin_ctx_t *)pin_ptr;
+
   ecatapp_loop();
 
-//  Obj.Position_actual = PIN(pos_fb);
-  Obj.Position_actual = Obj.Target_position;
+  Obj.Position_actual = PIN(pos_fb);
   Obj.Mode_of_operation_display = Obj.Modes_of_operation;
+//  PIN(out0) = Obj.Modes_of_operation;
 
-  PIN(pos_cmd) = ((Obj.Target_position & 0xFFFF) * M_PI * 2.0 / 0x10000) - M_PI;
+//  float p = (Obj.Target_position & 0x7FFFFF);
+
+//  PIN(pos_cmd) = (p  * M_PI * 2.0 / 0x800000) - M_PI;
+
+  PIN(pos_cmd) = Obj.Target_position;
   PIN(enable) = (Obj.Control_Word & CIA402_CONTROLWORD_ENABLE_OPERATION) >> 3;
-
+ 
   if(timeout > PIN(timeout)) {  //TODO: clamping
     PIN(connected) = 0;
     PIN(error)     = 1;

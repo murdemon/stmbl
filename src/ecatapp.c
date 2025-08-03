@@ -14,6 +14,7 @@
 _Objects    Obj;
 
 uint32_t timeout;
+uint8_t sync0_flag;
 
 /* Application hook declaration */
 void ecatapp(void);
@@ -56,12 +57,14 @@ cia402_axis_t cia402axis = {
 static uint8_t pdi_irq_flag = 0;
 static uint8_t sync0_irq_flag = 0;
 
+
 void EXTI1_IRQHandler(void)
 {
     if(EXTI_GetITStatus(EXTI_Line1) != RESET)
     {
         EXTI_ClearITPendingBit(EXTI_Line1);
         sync0_irq_flag = 1;
+        sync0_flag = 1;
     }
 
 }
@@ -136,7 +139,7 @@ void app_cia402_init(void)
 void app_cia402_mc()
 {
     // TODO motion control here
-    Obj.Position_actual = Obj.Target_position; // dummy loopback
+    // Obj.Position_actual = Obj.Target_position; // dummy loopback
     // csp is the only supported mode for now
     *(cia402axis.statusword) |= CIA402_STATUSWORD_CSP_DRIVE_FOLLOWS_COMMAND;
 }
