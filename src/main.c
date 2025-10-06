@@ -205,20 +205,12 @@ int main(void) {
   TIM_ITConfig(TIM_SLAVE, TIM_IT_Update, ENABLE);
 
 
-//  SysTick_Config(SystemCoreClock / 1000);
-//        SysTick_Config(SystemCoreClock / 1000);
-//        APP_USART_Init();
-//        delay_init(); 
-
-
-//  ecatapp_init();
   
   while(1)  //run non realtime stuff
   {
     hal_run_nrt();
     //cdc_poll();
     Wait(1);
-  // ecatapp_loop();
   }
 }
 

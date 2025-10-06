@@ -15,13 +15,13 @@ typedef struct
 
    uint16_t Status_Word;
    int8_t Mode_of_operation_display;
-   uint32_t Position_actual;
+   int32_t Position_actual;
 
    /* Outputs */
 
    uint16_t Control_Word;
    int8_t Modes_of_operation;
-   uint32_t Target_position;
+   int32_t Target_position;
 
    /* Parameters */
 

@@ -14,7 +14,11 @@ HAL_PIN(pos);
 HAL_PIN(error);
 HAL_PIN(state);
 HAL_PIN(encoder_vals);
+HAL_PIN(encoder_vals_abm);
 HAL_PIN(encoder_bits);
+
+HAL_PIN(reset_abm);
+HAL_PIN(reset_abs);
 
 #pragma pack(push, 1)
 typedef struct {
@@ -35,7 +39,7 @@ typedef struct {
   uint8_t req;
   smartabs_cf_t cf;
   smartabs_sf_t sf;
-  uint8_t pos[3];
+  uint8_t pos[8];
   uint8_t crc;
 } smartabs_reply_read_0_t;
 #pragma pack(pop)
@@ -391,7 +395,7 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   DMA_Cmd(DMA2_Stream1, DISABLE);
   DMA_ClearFlag(DMA2_Stream1, DMA_FLAG_TCIF1);
 
-  uint8_t crc = calc_crc8((uint8_t *)&ctx->rxbuf.reply.cf, 6, smartabs_crc8_table);
+  uint8_t crc = calc_crc8((uint8_t *)&ctx->rxbuf.reply.cf, 11, smartabs_crc8_table);
 
   if(!crc) {
 
@@ -407,8 +411,17 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
       if (pin_bits == 23.0)
       {
       uint32_t tpos = ((ctx->rxbuf.reply.pos[2]) << 16) + (ctx->rxbuf.reply.pos[1] << 8) + ctx->rxbuf.reply.pos[0];
-      PIN(encoder_vals) = tpos;
+      int16_t tpos_1 = (ctx->rxbuf.reply.pos[5] << 8) + ctx->rxbuf.reply.pos[4];
+      float tmp1;
+
       PIN(pos)      = (tpos * M_PI * 2.0 / 8388608.0) - M_PI;
+
+
+      tmp1 = 8388608.0 * (float)tpos_1 + (float)tpos;
+
+      PIN(encoder_vals) = (int32_t)tmp1;
+      PIN(encoder_vals_abm) = tpos_1;
+
       }
 
     PIN(state)    = 3;
@@ -424,7 +437,21 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
   __disable_irq();
   GPIO_SetBits(GPIOD, GPIO_Pin_15);  //tx enable
-  USART_SendData(USART6, 0x02);
+
+  if (PIN(reset_abm))
+  {
+	USART_SendData(USART6, 0x62); //Reset Multiturn
+  }
+  else if (PIN(reset_abs))
+  {
+        USART_SendData(USART6, 0xC2); //Reset Absolute
+  }
+  else
+
+  {
+  	USART_SendData(USART6, 0x1A); //DATA ID 3  ABS0 ABS1 ABS2 ENID ABM0 ABM1 ABM2 ALMC
+  }
+
   while(USART_GetFlagStatus(USART6, USART_FLAG_TC) == RESET)
     ;
   GPIO_ResetBits(GPIOD, GPIO_Pin_15);  //tx disable
