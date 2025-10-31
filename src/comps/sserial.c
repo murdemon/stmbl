@@ -65,19 +65,17 @@ HAL_PIN(index_clear);
 HAL_PIN(index_out);
 HAL_PIN(pos_advance);
 
+HAL_PIN(test);
+HAL_PIN(baude);
+HAL_PIN(adr);
+
 //TODO: move to ctx
 struct sserial_ctx_t {
   uint32_t phase;
-  uint8_t rxbuf[128];
-  uint8_t rxbuf2[128];
-  uint8_t len;
-  int8_t print;
-  uint8_t crcchk;
-
 };
 
-static volatile uint8_t rxbuf[128];  //rx dma buffer
-static volatile uint8_t txbuf[128];  //tx dma buffer
+static volatile uint8_t rxbuf[512];  //rx dma buffer
+static volatile uint8_t txbuf[512];  //tx dma buffer
 static uint16_t address;             //current address pointer
 static int rxpos;                    //read pointer for rx ringbuffer
 static uint32_t timeout;
@@ -85,10 +83,11 @@ static lbp_t lbp;
 static const char name[] = LBPCardName;
 static unit_no_t unit;
 static uint32_t max_waste_ticks;
+static uint32_t max_waste_ticks_tx;
 static uint32_t block_bytes;
 
 #pragma pack(push, 1)
-
+//*****************************************************************************
 uint8_t sserial_slave[] = {
     0x0B,
     0x09,
@@ -523,21 +522,23 @@ const discovery_rpc_t discovery = {
     .ptocp  = 0x018B,
     .gtocp  = 0x01A5,
     .input  = 11,
-    .output = 9,
+    .output = 10,
 };
 
 typedef struct {
   float pos_cmd;
   float vel_cmd;
+  int8_t cmd1;
   uint32_t out_0 : 1;
   uint32_t out_1 : 1;
   uint32_t out_2 : 1;
   uint32_t out_3 : 1;
   uint32_t enable : 1;
-  uint32_t index_enable : 1;
-  uint32_t padding : 2;
-} sserial_out_process_data_t;  //size:9 bytes
-_Static_assert(sizeof(sserial_out_process_data_t) == 9, "sserial_out_process_data_t size error!");
+  uint32_t adr : 3;
+//  uint32_t index_enable : 1;
+//  uint32_t padding : 2;
+} sserial_out_process_data_t;  //size:10 bytes
+_Static_assert(sizeof(sserial_out_process_data_t) == 10, "sserial_out_process_data_t size error!");
 
 typedef struct {
   float pos_fb;
@@ -548,26 +549,25 @@ typedef struct {
   uint32_t in_2 : 1;
   uint32_t in_3 : 1;
   uint32_t fault : 1;
-  uint32_t index_enable : 1;
-  uint32_t padding : 2;
+  uint32_t adr : 3;
+//  uint32_t index_enable : 1;
+//  uint32_t padding : 2;
 } sserial_in_process_data_t;  //size:10 bytes
 _Static_assert(sizeof(sserial_in_process_data_t) == 10, "sserial_in_process_data_t size error!");
 //global name:scale addr:0x12c size:32 dir:0x80
 #define scale_address 300
-
+//******************************************************************************
 #pragma pack(pop)
 
 static sserial_out_process_data_t data_out;
 static sserial_in_process_data_t data_in;
 
-static uint8_t crc_reuest(uint8_t len, uint8_t *crc_up) {
+static uint8_t crc_reuest(uint8_t len) {
   uint8_t crc = crc8_init();
   for(int i = rxpos; i < rxpos + len; i++) {
     crc = crc8_update(crc, (void *)&(rxbuf[i % sizeof(rxbuf)]), 1);
   }
   crc = crc8_finalize(crc);
-  *crc_up = crc;
-//  *crc_up = rxbuf[(rxpos + len) % sizeof(rxbuf)];
   return crc == rxbuf[(rxpos + len) % sizeof(rxbuf)];
 }
 
@@ -623,12 +623,26 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_8;
+  GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;
+  GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_3;
+  GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;
+  GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   //USART RX
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
   GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
   GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  USART_InitStruct.USART_BaudRate            = 115200;
+  USART_InitStruct.USART_BaudRate            = PIN(baude);
   USART_InitStruct.USART_WordLength          = USART_WordLength_8b;
   USART_InitStruct.USART_StopBits            = USART_StopBits_1;
   USART_InitStruct.USART_Parity              = USART_Parity_No;
@@ -700,8 +714,8 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOB, &GPIO_InitStruct);
-
   GPIO_SetBits(GPIOB, GPIO_Pin_7);
+
 
   //generate unit number from 96bit unique chip ID
   unit.unit = U_ID[0] ^ U_ID[1] ^ U_ID[2];
@@ -710,9 +724,9 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   timeout = 1000;  //make sure we start in timeout
 
   //bytes to wait before expected end of transmission to prevent timeouts
-  block_bytes = 10;
+  block_bytes = 5;
   //calculate timeout in systicks for block_bytes
-  max_waste_ticks = (1.0 / 115200.0) * 11.0 * (float)block_bytes / (1.0f / (float)hal_get_systick_freq());
+  max_waste_ticks    = (1.0 / PIN(baude)) * 11.0 * (float)block_bytes / (1.0f / (float)hal_get_systick_freq());
 
   PIN(clock_scale) = 1.0;
   PIN(phase)       = 0;
@@ -726,7 +740,7 @@ static void hw_init(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
 static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   struct sserial_pin_ctx_t *pins = (struct sserial_pin_ctx_t *)pin_ptr;
-  struct sserial_ctx_t *ctx = (struct sserial_ctx_t *)ctx_ptr;
+  //struct sserial_ctx_t *mem = (struct sserial_ctx_t *)ctx_ptr;
   //next received packet will be written to bufferpos
   uint32_t bufferpos = sizeof(rxbuf) - DMA_GetCurrDataCounter(DMA2_Stream5);
   //how many packets we have the the rx buffer for processing
@@ -734,7 +748,6 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
 
   PIN(phase) += 1.0;
 
-//  if (DMA_GetCurrDataCounter(DMA2_Stream5) < discovery.output + 2 ) {return;}
 
   uint32_t goal    = 5;
   PIN(clock_scale) = 1.0;
@@ -747,11 +760,39 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
     }
   }
 
+
   PIN(available) = available;
+
+
+  if (UART4->SR & (1 << 7)) ///TXE flag
+    {   //TX transfer complete - disable IC from line
+	GPIO_ResetBits(GPIOB, GPIO_Pin_7);
+    }
+
 
   if(available >= 1) {
     lbp.byte = rxbuf[rxpos];
 
+/*  
+    printf("%02X",rxbuf[rxpos]);
+    printf("%02X",rxbuf[rxpos+1]);
+    printf("%02X",rxbuf[rxpos+2]);
+    printf("%02X",rxbuf[rxpos+3]);
+    printf("%02X",rxbuf[rxpos+4]);
+    printf("%02X",rxbuf[rxpos+5]);
+    printf("%02X",rxbuf[rxpos+6]);
+    printf("%02X",rxbuf[rxpos+7]);
+    printf("%02X",rxbuf[rxpos+8]);
+    printf("%02X",rxbuf[rxpos+9]);
+    printf("%02X",rxbuf[rxpos+10]);
+    printf("%02X",rxbuf[rxpos+11]);
+    printf("%02X",rxbuf[rxpos+12]);
+    printf("%02X",rxbuf[rxpos+13]);
+    printf("%02X",rxbuf[rxpos+14]);
+    printf("%02X",rxbuf[rxpos+15]);
+    printf("\r\n");
+*/
+    
     if(lbp.ct == CT_LOCAL && lbp.wr == 0) {  //local read, cmd+crc = 2b
       timeout = 0;
       if(available >= 2) {
@@ -787,6 +828,7 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
       }
     } else if(lbp.ct == CT_RPC) {  //RPC TODO: check for ct should not required for rpc
       timeout = 0;
+
       if(lbp.byte == UnitNumberRPC && available >= 2) {  //unit number, cmd+crc = 2b
         txbuf[0] = unit.byte[0];
         txbuf[1] = unit.byte[1];
@@ -799,8 +841,12 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
         send(sizeof(discovery), 1);
         rxpos += 2;
       } else if(lbp.byte == ProcessDataRPC && available >= discovery.output + 2 - block_bytes) {  //process data, requires cmd+output bytes+crc
+
         uint32_t t1         = hal_get_systick_value();
         uint32_t wait_ticks = 0;
+
+
+    
         //wait with timeout until rest of process data is received
         do {
           uint32_t t2 = hal_get_systick_value();
@@ -813,10 +859,13 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
           //how many packets we have the the rx buffer for processing
           available = (bufferpos - rxpos + sizeof(rxbuf)) % sizeof(rxbuf);
         } while(available < discovery.output + 2 && wait_ticks <= max_waste_ticks);
-
         //TODO: fault handling on timeout...
         //set input pins
-        data_in.pos_fb  = PIN(pos_fb);// + PIN(vel_fb) * PIN(pos_advance);
+	
+	uint32_t tmp_adr;
+	tmp_adr = PIN(adr);
+
+        data_in.pos_fb  = PIN(pos_fb) + PIN(vel_fb) * PIN(pos_advance);
         data_in.vel_fb  = PIN(vel_fb);
         data_in.current = CLAMP(PIN(current) / (30.0f / 128.0f), -127, 127);
         data_in.in_0    = (PIN(in0) > 0) ? 1 : 0;
@@ -824,44 +873,47 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
         data_in.in_2    = (PIN(in2) > 0) ? 1 : 0;
         data_in.in_3    = (PIN(in3) > 0) ? 1 : 0;
         data_in.fault   = (PIN(fault) > 0) ? 1 : 0;
-
+	data_in.adr     = tmp_adr;
         //copy output pins from rx buffer
+
         for(int i = 0; i < discovery.output; i++) {
           ((uint8_t *)(&data_out))[i] = rxbuf[(rxpos + i + 1) % sizeof(rxbuf)];
-          ctx->rxbuf[i] = rxbuf[(rxpos + i + 1) % sizeof(rxbuf)];
         }
-	  ctx->len = discovery.output;
-
-//	for(int i = 0; i < discovery.output+2; i++) {
-//          printf("%x ", rxbuf[(rxpos + i) % sizeof(rxbuf)]);
-//        }
-//	  printf("\n");
-
 
         //set bidirectional pins
-        PIN(index_out)       = data_out.index_enable;
-        data_in.index_enable = (PIN(index_clear) > 0) ? 0 : data_out.index_enable;
+
+/*        PIN(index_out)       = data_out.index_enable;
+          data_in.index_enable = (PIN(index_clear) > 0) ? 0 : data_out.index_enable;
+*/
 
         //copy input pins to tx buffer
         txbuf[0] = 0x00;  //fault byte
         for(int i = 0; i < (discovery.input - 1); i++) {
           txbuf[i + 1] = ((uint8_t *)(&data_in))[i];
         }
-        ctx->print = 1;
-	uint8_t crcchk;
-        if(crc_reuest(discovery.output + 1,&crcchk)) {
+          txbuf[discovery.input] = crc8((uint8_t *)txbuf, discovery.input);
 
+
+        if(crc_reuest(discovery.output + 1)) {
+
+	  if (data_out.adr == PIN(adr))
+	  {
+	  GPIO_SetBits(GPIOB, GPIO_Pin_7);
 
           //send buffer
           DMA_SetCurrDataCounter(DMA1_Stream4, discovery.input + 1);
           DMA_Cmd(DMA1_Stream4, DISABLE);
           DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4);
           DMA_Cmd(DMA1_Stream4, ENABLE);
-          txbuf[discovery.input] = crc8((uint8_t *)txbuf, discovery.input);
+
+          }
+
           //send(discovery.input, 1);
           timeout = 0;
-          //set output pins
-
+          
+	  //set output pins
+	  if (data_out.adr == PIN(adr))
+	  {
           PIN(pos_cmd)   = data_out.pos_cmd;
           PIN(pos_cmd_d) = data_out.vel_cmd;
           PIN(out0)      = data_out.out_0;
@@ -869,28 +921,19 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
           PIN(out2)      = data_out.out_2;
           PIN(out3)      = data_out.out_3;
           PIN(enable)    = data_out.enable;
-
-//          printf("Pos_cmd: %f \n",data_out.pos_cmd) ;
-//          printf("Pos_cmd_d: %f \n",data_out.vel_cmd) ;
-//          printf("Out_0: %f \n",data_out.out_0) ;
-//          printf("Out_1: %f \n",data_out.out_1) ;
-//          printf("Out_2: %f \n",data_out.out_2) ;
-//          printf("Out_3: %f \n",data_out.out_3) ;
-//          printf("Enable: %f \n",data_out.enable) ;
-
+	
+	  }
         } else {
-	  ctx->crcchk = crcchk;
-          PIN(crc_error)
-          ++;
-     //     PIN(connected) = 0;
-     //     PIN(error)     = 1;
-     //     PIN(pos_cmd)   = 0;
-     //     PIN(pos_cmd_d) = 0;
-     //     PIN(out0)      = 0;
-     //     PIN(out1)      = 0;
-     //     PIN(out2)      = 0;
-     //     PIN(out3)      = 0;
-     //     PIN(enable)    = 0;
+          PIN(crc_error)  ++;
+          PIN(connected) = 0;
+          PIN(error)     = 1;
+          PIN(pos_cmd)   = 0;
+          PIN(pos_cmd_d) = 0;
+          PIN(out0)      = 0;
+          PIN(out1)      = 0;
+          PIN(out2)      = 0;
+          PIN(out3)      = 0;
+          PIN(enable)    = 0;
         }
         rxpos += discovery.output + 2;
       }
@@ -962,29 +1005,11 @@ static void frt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
   }
   rxpos = rxpos % sizeof(rxbuf);
   timeout++;
-
-
-}
-
-static void nrt_func(void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
-  struct sserial_ctx_t *ctx      = (struct sserial_ctx_t *)ctx_ptr;
-  struct sserial_pin_ctx_t *pins = (struct sserial_pin_ctx_t *)pin_ptr;
-
-  if(ctx->print > 0) {
-    ctx->print = -1;
-    printf("Data is coming CRC:%x\n", ctx->crcchk);
-   for(int i = 0; i < ctx->len; i++)
-	{
-		printf("%x ", ctx->rxbuf[i]);
-	}
-
-    printf("\n");
-    }
 }
 
 const hal_comp_t sserial_comp_struct = {
     .name      = "sserial",
-    .nrt       = frt_func,//nrt_func,
+    .nrt       = frt_func,  //nrt_func,
     .rt        = 0,
     .frt       = 0,//frt_func,
     .nrt_init  = 0,
