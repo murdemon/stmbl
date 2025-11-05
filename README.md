@@ -138,6 +138,38 @@ conf0.pos_bw = 42.811371 # append to config
 conf0.vel_bw = 500.000000 # append to config  
 conf0.vel_d = 7.330830 # append to config  
 
+New sserial RS422 bus on 500 Mbaud speed (with adddressing)  
+
+link pid  
+link pmsm  
+link smartabs_fb0  
+link misc  
+link sserial  
+load avg  
+avg0.rt_prio = 1.0  
+avg0.frt_prio = 1.0  
+sserial0.baude = 500000  
+sserial0.adr = 2  
+sserial0.pos_fb = smartabs0.encoder_vals  
+linrev0.scale = 8388608  
+avg0.mult = 1  
+avg0.lpf = 5  
+avg0.in = sserial0.pos_cmd  
+linrev0.cmd_in = avg0.out  
+conf0.r = 1.262658 # append to config  
+conf0.l = 0.019329 # append to config  
+conf0.polecount = 5.000000 # append to config  
+conf0.mot_fb_offset = -2.176324 # append to config  
+conf0.psi = 0.054751 # append to config  
+conf0.j = 0.000277 # append to config  
+conf0.o = 0.001396 # append to config  
+conf0.d = 0.000386 # append to config  
+conf0.f = 0.041576 # append to config  
+conf0.pos_bw = 100 # append to config  
+conf0.vel_bw = 500.000000 # append to config  
+conf0.vel_d = 7.330830 # append to config  
+conf0.vel_g = 0.9 # append to config  
+
 If you want to get a prototype of this board contact us [here](https://matrix.to/#/@stmbl:freakontrol.com).  
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/freakontrol)
 
