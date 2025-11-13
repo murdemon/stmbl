@@ -404,8 +404,17 @@ static void rt_func(float period, void *ctx_ptr, hal_pin_inst_t *pin_ptr) {
       if (pin_bits == 17)
       {
       uint32_t tpos = ((ctx->rxbuf.reply.pos[2] & 0x01) << 16)  + (ctx->rxbuf.reply.pos[1] << 8) + ctx->rxbuf.reply.pos[0];
-      PIN(encoder_vals) = tpos;
+      int16_t tpos_1 = (ctx->rxbuf.reply.pos[5] << 8) + ctx->rxbuf.reply.pos[4];
+      float tmp1;
+
       PIN(pos)      = (tpos * M_PI * 2.0 / 131072.0) - M_PI;
+
+      tmp1 = 131072.0 * (float)tpos_1 + (float)tpos;
+
+
+      PIN(encoder_vals) = (int32_t)tmp1;
+      PIN(encoder_vals_abm) = tpos_1;
+
       }
 
       if (pin_bits == 23.0)
